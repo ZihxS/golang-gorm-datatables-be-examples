@@ -39,7 +39,7 @@ func main() {
 
 	r := mux.NewRouter()
 
-	r.HandleFunc("/column-add", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/add-column", func(w http.ResponseWriter, r *http.Request) {
 		req, err := datatables.ParseRequest(r)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Error processing request: %v", err), http.StatusInternalServerError)
