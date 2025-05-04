@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	datatables "github.com/ZihxS/golang-gorm-datatables" // [👈🏼 FOCUS HERE]
+	datatables "github.com/ZihxS/golang-gorm-datatables"
 	"github.com/gorilla/mux"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-	dsn := "..." // [👈🏼 ADJUST HERE]
+	dsn := "..." // [👈🏼 ADJUST]
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})
@@ -48,28 +48,22 @@ func main() {
 			Joins("LEFT JOIN user_tags ut on ut.user_id = u.id").
 			Joins("LEFT JOIN tags t on t.id = ut.tag_id")
 
-		// [👇🏼 FOCUS HERE]
 		datatable := datatables.New(tx).Req(*req)
 		datatable.WithNumber()
-		// [👆🏼 FOCUS HERE]
 
-		// [👇🏼 FOCUS HERE]
-		datatable.
-			Filter(func(db *gorm.DB) *gorm.DB {
-				return db.Where("o.quantity > 1")
-			}).
-			Filter(func(db *gorm.DB) *gorm.DB {
-				return db.Where("o.price*o.quantity > 150")
-			})
-		// [👆🏼 FOCUS HERE]
+		datatable.Filter(func(db *gorm.DB) *gorm.DB {
+			return db.Where("o.quantity > 1")
+		})
 
-		// [👇🏼 FOCUS HERE]
+		datatable.Filter(func(db *gorm.DB) *gorm.DB {
+			return db.Where("o.price*o.quantity > 150")
+		})
+
 		response, err := datatable.Make()
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Error processing request: %v", err), http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("Error processing rdatatablesequest: %v", err), http.StatusInternalServerError)
 			return
 		}
-		// [👆🏼 FOCUS HERE]
 
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(response)

@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	datatables "github.com/ZihxS/golang-gorm-datatables" // [👈🏼 FOCUS HERE]
+	datatables "github.com/ZihxS/golang-gorm-datatables"
 	"github.com/gorilla/mux"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -20,7 +20,7 @@ type User struct {
 }
 
 func main() {
-	dsn := "..." // [👈🏼 ADJUST HERE]
+	dsn := "..." // [👈🏼 ADJUST]
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})
@@ -40,20 +40,18 @@ func main() {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/edit-column", func(w http.ResponseWriter, r *http.Request) {
-		req, err := datatables.ParseRequest(r) // [👈🏼 FOCUS HERE]
+		req, err := datatables.ParseRequest(r)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Error processing request: %v", err), http.StatusInternalServerError)
 			return
 		}
 
-		// [👇🏼 FOCUS HERE]
 		editedColumnFunc := func(value any) any {
 			return "Name: " + value.(string)
 		}
-		// [👆🏼 FOCUS HERE]
 
 		tx := db.Model(&User{})
-		response, err := datatables.New(tx).Req(*req).EditColumn("name", editedColumnFunc).Make() // [👈🏼 FOCUS HERE]
+		response, err := datatables.New(tx).Req(*req).EditColumn("name", editedColumnFunc).Make()
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Error processing datatables: %v", err), http.StatusInternalServerError)
 			return
